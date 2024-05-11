@@ -1,27 +1,30 @@
 #pragma once
+#include <string>
 
 enum class ExpressionType {
-	UNKOWN,
+	UNKNOWN,
 	REAL_NUMBER,
-	PLACE_HOLDER,
-	LIST_LITERAL,
-	INFINITE_LIST,
-	FUNCTION_CALL,
-	EMBEDDED
+	LIST_FUNCTION,
+	PLACEHOLDER,
+	FUNCTION,
+	STATIC_FUNCTION,
+	RESULT
 };
 
-class expression {
+class Expression {
 public:
-	expression(ExpressionType type) : type(type) {}
-	virtual ~expression() = 0;
+	Expression(const std::string& name, ExpressionType type);
+	virtual ~Expression() = 0;
 
-	ExpressionType getType() const {
-		return type;
-	}
-	virtual expression* clone() const = 0;
+	const std::string& getName() const;
+
+	ExpressionType getType() const;
 
 private:
+	void setName(const std::string& value);
+	void setType(ExpressionType type);
+
+private:
+	std::string name;
 	ExpressionType type;
 };
-
-inline expression::~expression() = default;
