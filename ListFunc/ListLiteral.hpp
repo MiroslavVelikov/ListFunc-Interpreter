@@ -1,15 +1,19 @@
 #pragma once
-#include "Expression.h"
+#include "Expression.hpp"
 #include <stdexcept> // out_of_range
 #include <vector>
 
 template <typename Type>
 class ListLiteral : public Expression {
 public:
-	ListLiteral(const std::string& name);
+	ListLiteral();
 	
-	~ListLiteral() = default;
+	~ListLiteral();
+	ListLiteral(const ListLiteral& other);
+	ListLiteral& operator=(const ListLiteral& other);
 
+	virtual Expression* clone() const override;
+	
 	size_t getSize() const;
 	
 	void add(const Type& element);
@@ -19,12 +23,42 @@ public:
 	Type& operator[](size_t index);
 	
 private:
+	void free();
+	void copy(const ListLiteral& other);
+
+private:
 	std::vector<Type*> data;
+
+	static const size_t DEFAULT_CAPACITY = 8;
 };
 
 template <typename Type>
-inline ListLiteral<Type>::ListLiteral(const std::string& name)
-{
+inline ListLiteral<Type>::ListLiteral()
+	: Expression(ExpressionType::LIST_LITERAL), data(DEFAULT_CAPACITY) {}
+
+template<typename Type>
+inline ListLiteral<Type>::~ListLiteral() {
+	free();
+}
+
+template<typename Type>
+inline ListLiteral<Type>::ListLiteral(const ListLiteral& other) {
+	copy(other);
+}
+
+template<typename Type>
+inline ListLiteral<Type>& ListLiteral<Type>::operator=(const ListLiteral& other) {
+	if (this != &other) {
+		free();
+		copy(other);
+	}
+	
+	return *this;
+}
+
+template<typename Type>
+inline Expression* ListLiteral<Type>::clone() const {
+	return new ListLiteral(*this);
 }
 
 template <typename Type>
@@ -57,4 +91,20 @@ inline const Type& ListLiteral<Type>::operator[](size_t index) const {
 template <typename Type>
 inline Type& ListLiteral<Type>::operator[](size_t index) {
 	return data[index];
+}
+
+template<typename Type>
+inline void ListLiteral<Type>::free() {
+	for (size_t i = 0; i < data.size(); ++i) {
+		delete data[i];
+	}
+}
+
+template<typename Type>
+inline void ListLiteral<Type>::copy(const ListLiteral& other) {
+	data.reserve(other.data.capacity());
+	
+	for (size_t i = 0; i < other.data.size; ++i) {
+		add(*other.data[i]);
+	}
 }

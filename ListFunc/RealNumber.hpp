@@ -1,12 +1,14 @@
 #pragma once
-#include "Expression.h"
+#include "Expression.hpp"
 
 class RealNumber : public Expression {
 public:
-	RealNumber(const std::string& name, double value)
-		: Expression(name, ExpressionType::REAL_NUMBER), value(value) {}
+	RealNumber(double value)
+		: Expression(ExpressionType::REAL_NUMBER), value(value) {}
 
-	~RealNumber() = default;
+	virtual Expression* clone() const override {
+		return new RealNumber(*this);
+	}
 
 	double getValue() const {
 		return value;
