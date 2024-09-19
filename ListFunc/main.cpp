@@ -1,7 +1,6 @@
-#include <iostream>
-#include "ListLiteral.hpp"
+#include "System.h"
 
-int main() {
-	std::cout << "Hello, world!\n";
+int main() {	
+	System::getInstance().startProgram();
 	return 0;
 }
